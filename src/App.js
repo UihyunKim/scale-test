@@ -1,12 +1,22 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import portrait from "./img/portrait.png";
 
 const appStyle = {
   position: "relative",
+  backgroundColor: "gray",
   width: "500px",
   height: "500px",
-  border: "1px solid red"
+  overflow: "hidden"
+};
+
+const translateZoneStyle = {
+  height: "100%",
+  wight: "100%",
+  top: 0,
+  left: 0,
+  textAlign: "left",
+  transition: "all .5s linear"
 };
 
 const scaleZoneStyle = {
@@ -14,50 +24,75 @@ const scaleZoneStyle = {
   wight: "100%",
   top: 0,
   left: 0,
-  border: "2px solid blue",
   textAlign: "left",
-  transformOrigin: "0 0",
-  padding: "100px"
+  // transformOrigin: "56px 107.5546875px",
+  transition: "all .5s linear"
+};
+
+const getCenter = ({ left, top, width, height }) => {
+  return {
+    cx: left + width / 2,
+    cy: top + height / 2
+  };
 };
 
 const App = () => {
   const scaleRef = useRef(null);
+  const translateRef = useRef(null);
   const imgRef = useRef(null);
 
-  useEffect(() => {
-    console.log(imgRef.current.getBoundingClientRect());
-  });
+  const [rectCx, setRectCx] = useState(0);
+  const [rectCy, setRectCy] = useState(0);
 
   const logRect = () => {
     console.log(imgRef.current.getBoundingClientRect());
+    const rectCenter = getCenter(imgRef.current.getBoundingClientRect());
+    setRectCx(rectCenter.cx);
+    setRectCy(rectCenter.cy);
   };
 
-  const doubleScale = () => {
-    scaleRef.current.style.transform = "scale(10)";
+  useEffect(() => {
+    scaleRef.current.style.transformOrigin = `${rectCx}px ${rectCy}px`;
+  });
+
+  const scale = () => {
+    scaleRef.current.style.transform = `scale(60)`;
+    translate();
   };
 
-  const moveTopLeft = () => {
-    const imgRect = imgRef.current.getBoundingClientRect();
-    // scaleRef.current.style.transform = `scale(2) translateX(-${imgRect.left}px) translateY(-${imgRect.top}px)`;
-    scaleRef.current.style.transform = `scale(10) translateX(-${imgRect.left /
-      10}px) translateY(-${imgRect.top / 10}px)`;
+  const translate = () => {
+    const container = translateRef.current.getBoundingClientRect();
+    const x = container.width / 2 - rectCx;
+    const y = container.height / 2 - rectCy;
+
+    console.log(container, x, y);
+    console.log(`translate(${x}px ${y}px)`);
+    translateRef.current.style.transform = `translate(${x}px, ${y}px)`;
   };
 
   return (
     <div className="App" style={appStyle}>
-      <div id="scale-zone" ref={scaleRef} style={scaleZoneStyle}>
-        <img
-          src={portrait}
-          ref={imgRef}
-          style={{ width: "100px", height: "auto" }}
-          onLoad={logRect}
-          alt="asdf"
-        />
+      <div id="translate-zone" ref={translateRef} style={translateZoneStyle}>
+        <div id="scale-zone" ref={scaleRef} style={scaleZoneStyle}>
+          <img
+            src={portrait}
+            ref={imgRef}
+            className="position-absolute"
+            style={{
+              width: "10px",
+              height: "auto",
+              top: "100px",
+              left: "50px"
+            }}
+            onLoad={logRect}
+            alt="asdf"
+          />
+        </div>
       </div>
       <div className="position-absolute d-flex" style={{ top: 0, right: 0 }}>
         <button onClick={logRect}>logRect</button>
-        <button onClick={doubleScale}>scale</button>
-        <button onClick={moveTopLeft}>moveTopLeft</button>
+        <button onClick={scale}>scale</button>
+        <button onClick={translate}>translate</button>
       </div>
     </div>
   );
