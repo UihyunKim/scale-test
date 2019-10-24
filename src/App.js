@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import portrait from "./img/portrait.png";
+import anime from "animejs";
 
 const appStyle = {
   position: "relative",
@@ -15,8 +16,8 @@ const translateZoneStyle = {
   wight: "100%",
   top: 0,
   left: 0,
-  textAlign: "left",
-  transition: "all .5s linear"
+  textAlign: "left"
+  // transition: "all .5s linear"
 };
 
 const scaleZoneStyle = {
@@ -24,9 +25,8 @@ const scaleZoneStyle = {
   wight: "100%",
   top: 0,
   left: 0,
-  textAlign: "left",
-  // transformOrigin: "56px 107.5546875px",
-  transition: "all .5s linear"
+  textAlign: "left"
+  // transition: "all .5s linear"
 };
 
 const getCenter = ({ left, top, width, height }) => {
@@ -56,8 +56,15 @@ const App = () => {
   });
 
   const scale = () => {
-    scaleRef.current.style.transform = `scale(60)`;
-    translate();
+    // scaleRef.current.style.transform = `scale(10)`;
+    anime({
+      targets: scaleRef.current,
+      // transformOrigin: [`${rectCx}px, ${rectCy}px`, `${rectCx}px, ${rectCy}px`],
+      scale: 20,
+      translateX: "10px",
+      translateY: "10px",
+      easing: "linear"
+    });
   };
 
   const translate = () => {
@@ -67,7 +74,16 @@ const App = () => {
 
     console.log(container, x, y);
     console.log(`translate(${x}px ${y}px)`);
-    translateRef.current.style.transform = `translate(${x}px, ${y}px)`;
+    // translateRef.current.style.transform = `translate(${x}px, ${y}px)`;
+
+    anime({
+      targets: scaleRef.current,
+      // transformOrigin: [`${rectCx}px, ${rectCy}px`, `${rectCx}px, ${rectCy}px`],
+      scale: 5,
+      translateX: "50%",
+      translateY: "50%",
+      easing: "linear"
+    });
   };
 
   return (
