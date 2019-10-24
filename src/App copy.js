@@ -40,11 +40,9 @@ const App = () => {
   const scaleRef = useRef(null);
   const translateRef = useRef(null);
   const imgRef = useRef(null);
-  const sliderRef = useRef(null);
 
   const [rectCx, setRectCx] = useState(0);
   const [rectCy, setRectCy] = useState(0);
-  const [slider, setSlider] = useState(0);
 
   const logRect = () => {
     console.log(imgRef.current.getBoundingClientRect());
@@ -53,51 +51,40 @@ const App = () => {
     setRectCy(rectCenter.cy);
   };
 
+  useEffect(() => {
+    scaleRef.current.style.transformOrigin = `${rectCx}px ${rectCy}px`;
+  });
+
   const scale = () => {
+    // scaleRef.current.style.transform = `scale(10)`;
     anime({
       targets: scaleRef.current,
-      transformOrigin: [`${rectCx}px ${rectCy}px`, `${rectCx}px ${rectCy}px`],
-      scale: 40,
+      // transformOrigin: [`${rectCx}px, ${rectCy}px`, `${rectCx}px, ${rectCy}px`],
+      scale: 20,
+      translateX: "10px",
+      translateY: "10px",
       easing: "linear"
     });
   };
 
-  const animeInit = () => {
+  const translate = () => {
     const container = translateRef.current.getBoundingClientRect();
     const x = container.width / 2 - rectCx;
     const y = container.height / 2 - rectCy;
-    const innerTl = anime
-      .timeline({
-        direction: "alternate",
-        easing: "linear",
-        duration: 1000,
-        update: () => {
-          // console.log("update: ", innerTl.progress, slider);
-          // setSlider(innerTl.progress);
-        }
-      })
-      .add({
-        targets: scaleRef.current,
-        transformOrigin: [`${rectCx}px ${rectCy}px`, `${rectCx}px ${rectCy}px`],
-        scale: 40
-      })
-      .add(
-        {
-          targets: translateRef.current,
-          translateX: x,
-          translateY: y
-        },
-        0
-      );
 
-    // tl.pause();
-    return innerTl;
+    console.log(container, x, y);
+    console.log(`translate(${x}px ${y}px)`);
+    // translateRef.current.style.transform = `translate(${x}px, ${y}px)`;
+
+    anime({
+      targets: scaleRef.current,
+      // transformOrigin: [`${rectCx}px, ${rectCy}px`, `${rectCx}px, ${rectCy}px`],
+      scale: 5,
+      translateX: "50%",
+      translateY: "50%",
+      easing: "linear"
+    });
   };
-
-  useEffect(() => {
-    const tl = animeInit();
-    tl.seek(tl.duration * (slider / 100));
-  });
 
   return (
     <div className="App" style={appStyle}>
@@ -121,20 +108,7 @@ const App = () => {
       <div className="position-absolute d-flex" style={{ top: 0, right: 0 }}>
         <button onClick={logRect}>logRect</button>
         <button onClick={scale}>scale</button>
-        <input
-          ref={sliderRef}
-          step=".001"
-          type="range"
-          min="0"
-          max="100"
-          value={slider}
-          onChange={e => {
-            console.log(e.target.value, slider);
-            if (e.target.value !== slider) {
-              setSlider(e.target.value);
-            }
-          }}
-        ></input>
+        <button onClick={translate}>translate</button>
       </div>
     </div>
   );
